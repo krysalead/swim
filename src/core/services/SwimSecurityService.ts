@@ -1,6 +1,7 @@
 const JWT = require("jsonwebtoken");
 import { provideSingleton, inject } from "../../ioc";
-import { CORE_TYPES } from "../constants";
+import { CORE_TYPES } from "../interfaces/coreTypes";
+import { IConfigService } from "../../interfaces/services";
 import { UserAuth } from "../interfaces/UserAuth";
 import { set } from "../services/CLSService";
 import { factory } from "../services/LoggingService";
@@ -9,7 +10,6 @@ import {
   ISwimSecurityService,
   IInterceptorHandler,
   IServiceStatus,
-  IConfigService,
 } from "../interfaces/services";
 const logger = factory.getLogger("service.SwimSecurity");
 

@@ -97,18 +97,11 @@ export interface IHookManagerService {
 export interface ISQLService {
   init();
   getByPk(entity: any, pkName: any, pkValue: any): Promise<any>;
-  insertSingleEntity(entityType: any, entity: any): Promise<any>;
-  getEntities(
-    entityType: any,
-    fieldsValues?: { field: string; value: string }[]
-  ): Promise<any>;
-  // To be use under review and mainly in test not production code
-  executreRawSQL(query: string, entityType: any): Promise<any>;
 }
 
 export interface IMetricService {
   push(type: string, name: string, value: any, tag?: string, tagValue?: string);
-  close();
+  flush();
   query(
     type: string,
     name: string,

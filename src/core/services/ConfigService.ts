@@ -1,6 +1,7 @@
 import { provideSingleton } from "../../ioc";
 
-import { CORE_TYPES } from "../constants";
+import { IConfigService } from "../../interfaces/services";
+import { CORE_TYPES } from "../interfaces/coreTypes";
 //Load from the user definition
 import { Config } from "../../interfaces/config";
 
@@ -8,7 +9,6 @@ import { config as productonConfig } from "../../config/production";
 import { config as developmentConfig } from "../../config/development";
 import { config as testConfig } from "../../config/test";
 import { config as nreConfig } from "../../config/nre";
-import { IConfigService } from "../interfaces/services";
 
 @provideSingleton(CORE_TYPES.ConfigService)
 export class ConfigService implements IConfigService {

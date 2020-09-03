@@ -7,8 +7,9 @@ import {
   IConfigService,
   IDatabaseService,
   IMetricService,
+  ISQLService
 } from "./core/interfaces/services";
-import { CORE_TYPES, METRICS } from "./core/constants";
+import { CORE_TYPES, METRICS } from "./core/interfaces/coreTypes";
 import { iocContainer } from "./ioc";
 import { v1 as uuidv1 } from "uuid";
 import { set, middleware } from "./core/services/CLSService";
@@ -27,14 +28,14 @@ const goodOptions = {
       {
         module: "good-squeeze",
         name: "Squeeze",
-        args: [{ response: "*", request: "*" }],
+        args: [{ response: "*", request: "*" }]
       },
       {
-        module: "good-console",
+        module: "good-console"
       },
-      "stdout",
-    ],
-  },
+      "stdout"
+    ]
+  }
 };
 
 /**
@@ -42,14 +43,12 @@ const goodOptions = {
  */
 const startService = async () => {
   let config: IConfigService = iocContainer.get(CORE_TYPES.ConfigService);
-  await Promise.all(
-    Object.keys(config.getConfig().database).map(async (dbType) => {
-      const database: IDatabaseService = iocContainer.get(
-        config.getConfig().database[dbType].adapter
-      );
-      await database.init(config.getConfig());
-    })
+  const database: IDatabaseService = iocContainer.get(
+    CORE_TYPES.DatabaseService
   );
+  await database.init(config.getConfig());
+  const sqlite: ISQLService = iocContainer.get(CORE_TYPES.SQLService);
+  await sqlite.init();
 };
 
 const init = async () => {
@@ -63,14 +62,14 @@ const init = async () => {
   logger.debug(`Server setup ${config.getConfig().server.port}`);
   server.connection({
     port: config.getConfig().server.port,
-    labels: config.getConfig().server.name,
+    labels: config.getConfig().server.name
   });
   server.ext("onPreResponse", CORS(config.getConfig().server.cors, logger));
   // Install logger
   logger.debug(`Query logger setup`);
   await server.register({
     register: require("good"),
-    options: goodOptions,
+    options: goodOptions
   });
   // Install core and functionnal routes
   logger.debug(`Register API routes`);
@@ -81,7 +80,7 @@ const init = async () => {
   logger.debug(`Traceid Setup`);
   server.ext({
     type: "onRequest",
-    method: function (request, reply) {
+    method: function(request, reply) {
       const { req, res } = request.raw;
       request.id = uuidv1();
       const methodColors = {
@@ -89,7 +88,7 @@ const init = async () => {
         delete: 31,
         put: 36,
         post: 33,
-        options: 34,
+        options: 34
       };
       let color = methodColors[request.method.toLowerCase()];
       request.log(
@@ -98,15 +97,15 @@ const init = async () => {
       );
       let cleanPath = request.path
         .split("/")
-        .filter((split) => split !== "v1")
-        .filter((split) => !isId(split))
+        .filter(split => split !== "v1")
+        .filter(split => !isId(split))
         .join("/");
       metric.push(METRICS.REQUEST, "type", request.method, "target", cleanPath);
-      return middleware(req, res, function () {
+      return middleware(req, res, function() {
         set("reqId", request.id);
         reply.continue();
       });
-    },
+    }
   });
   try {
     logger.debug(`Starting server...`);
@@ -125,23 +124,18 @@ const init = async () => {
 
 const stop = async () => {
   logger.info("Shutting down server");
-  let config: IConfigService = iocContainer.get(CORE_TYPES.ConfigService);
-  await Promise.all(
-    Object.keys(config.getConfig().database).map(async (dbType) => {
-      const database: IDatabaseService = iocContainer.get(
-        config.getConfig().database[dbType].adapter
-      );
-      await database.close();
-    })
+  const database: IDatabaseService = iocContainer.get(
+    CORE_TYPES.DatabaseService
   );
+  await database.close();
   let metric: IMetricService = iocContainer.get(CORE_TYPES.MetricService);
-  await metric.close();
-  server.stop({ timeout: 10000 }).then(function (err) {
+  await metric.flush();
+  server.stop({ timeout: 10000 }).then(function(err) {
     logger.info("hapi server stopped");
     process.exit(err ? 1 : 0);
   });
 };
 module.exports = {
   init: init,
-  stop: stop,
+  stop: stop
 };

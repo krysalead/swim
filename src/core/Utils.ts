@@ -102,7 +102,3 @@ export function isUndefined(o) {
 export function isId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }
-
-export function isFloat(possibleFloatValue) {
-  return !isNaN(parseFloat(possibleFloatValue));
-}

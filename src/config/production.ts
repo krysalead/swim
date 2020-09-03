@@ -5,19 +5,24 @@ export const config: Config = {
   remote: {
     enabled: false,
   },
-  database: {},
+  database: {
+    mongo: {
+      url: process.env.DATABASE_URL,
+      debug: false,
+    },
+  },
   server: {
     port: +process.env.PORT || 4000,
     name: process.env.NAME || "main",
-    cors: process.env.CORS || "http://localhost:3000",
-    url: process.env.SERVER_URL || "http://localhost:3000",
+    cors: process.env.CORS || "*",
+    url: process.env.DOMAIN_URL || "http://localhost:8888",
   },
   metric: {
-    kafka: {
-      brokers: process.env.BROKERS || "kafka:9092",
-      topic: process.env.TOPIC || "metric-topic",
-      clientId: "um-app",
-    },
+    token: process.env.METRIC_TOKEN,
+    url:
+      process.env.METRIC_URL ||
+      "https://eu-central-1-1.aws.cloud2.influxdata.com",
+    bucket: process.env.METRIC_BUCKET || "functional",
   },
   analytics: {
     id: null,
