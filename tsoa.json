@@ -9,9 +9,7 @@
         "type": "apiKey",
         "name": "jwt_token",
         "in": "header",
-        "scopes": {
-
-        }
+        "scopes": {}
       }
     }
   },
@@ -20,7 +18,7 @@
     "entryFile": "./src/hapi-server.ts",
     "routesDir": "./src",
     "middleware": "hapi",
-    "middlewareTemplate": "custom-hpi-template.handlebars",
+    "middlewareTemplate": "./scripts/custom-hapi-template.handlebars",
     "authenticationModule": "./src/core/hapiAuthentication.ts",
     "iocModule": "./src/ioc"
   },
