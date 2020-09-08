@@ -5,7 +5,7 @@ RUN apk add git
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY package.json .
-COPY docker-entrypoint.js .
+COPY scripts/docker-entrypoint.js .
 RUN npm install --quiet
 COPY . .
 EXPOSE 4000
