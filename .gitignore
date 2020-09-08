@@ -10,3 +10,4 @@
 /db/
 src/routes.ts
 newrelic_agent.log
+npm-debug.log
